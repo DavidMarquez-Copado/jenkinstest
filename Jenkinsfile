@@ -13,7 +13,7 @@ pipeline {
     }
     stage('coverage') {
       steps {
-        sh '/usr/local/bin/mvn -f pom.xml clean org.codehaus.mojo:cobertura-maven-plugin:2.7:cobertura -Dcobertura.report.formats=xml,html'
+        sh '/usr/local/bin/mvn -f pom.xml clean org.codehaus.mojo:cobertura-maven-plugin:2.7:cobertura -Dcobertura.report.format=xml'
         sh '/usr/local/bin/groovy copado_coverage.groovy -f ${COPADO_COVERAGE_FEATURE_BRANCH} -i ${COPADO_COVERAGE_CLIENT_ID} -s ${COPADO_COVERAGE_CLIENT_SECRET} -u ${COPADO_COVERAGE_USER_NAME} -p ${COPADO_COVERAGE_PASSWORD}'
       }
     }
