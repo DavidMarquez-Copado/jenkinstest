@@ -17,8 +17,8 @@ pipeline {
         sh '/usr/local/bin/mvn -f pom.xml org.codehaus.mojo:cobertura-maven-plugin:2.7:cobertura -Dcobertura.report.format=html'
         sh 'zip -r target/site/cobertura.zip target/site/cobertura'
 
-        @Library('copadoCoverage@')
-        script { updateCopadoCoverage(['-f',${COPADO_COVERAGE_FEATURE_BRANCH},'-i',${COPADO_COVERAGE_CLIENT_ID},'-s',${COPADO_COVERAGE_CLIENT_SECRET},'-u',${COPADO_COVERAGE_USER_NAME},'-p',${COPADO_COVERAGE_PASSWORD}]) }
+        @Library('copadoCoverage@') _
+        sh updateCopadoCoverage(['-f',${COPADO_COVERAGE_FEATURE_BRANCH},'-i',${COPADO_COVERAGE_CLIENT_ID},'-s',${COPADO_COVERAGE_CLIENT_SECRET},'-u',${COPADO_COVERAGE_USER_NAME},'-p',${COPADO_COVERAGE_PASSWORD}])
       }
     }
 
