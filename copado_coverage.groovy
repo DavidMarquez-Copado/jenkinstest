@@ -76,14 +76,14 @@ class SalesforceService {
 
     }
 
-    void uploadAttachment(String coverageXmlStr, String userStoryId) {
+    void uploadAttachment(String userStoryId) {
 
         println "\n-------- SALESFORCE: Upload attachment -------"
         String date = new Date().format('yyyyMMdd_HHmmss_SSS')
         println date
         def attachment = [:]
-        attachment['name'] = "coverage${date}.xml"
-        attachment['Body'] = (String) coverageXmlStr.bytes.encodeBase64().toString()
+        attachment['name'] = "coverage${date}.zip"
+        attachment['Body'] = new String(java.util.Base64.getEncoder().encode(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("target/site/cobertura.zip"))))
         attachment['parentId'] = userStoryId
 
         String attachmentStr = groovy.json.JsonOutput.toJson(attachment)
@@ -96,7 +96,6 @@ class SalesforceService {
     static HttpURLConnection buildPostRequest(String urlStr) {
         buildPostRequest(urlStr, null, null)
     }
-
 
     static HttpURLConnection buildPostRequest(String urlStr, String sessionToken, String body) {
         def request = new URL(urlStr).openConnection() as HttpURLConnection
@@ -144,14 +143,14 @@ class SalesforceService {
 
 class CoverageService {
 
-    static String readCoverageFile(){
+    static String readCoverageFile() {
         return new File('./target/site/cobertura/coverage.xml').text
     }
 
     /**
-    *
-    * @return XML Parser which does not validate the content
-    */
+     *
+     * @return XML Parser which does not validate the content
+     */
     static XmlSlurper buildXmlParser() {
         def parser = new XmlSlurper()
         parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
@@ -160,10 +159,10 @@ class CoverageService {
     }
 
     /**
-    * Given a coverage.xml content as string, it will parse the content and returns a map with the Class/Coverage rates
-    * @param coverageXml
-    * @return
-    */
+     * Given a coverage.xml content as string, it will parse the content and returns a map with the Class/Coverage rates
+     * @param coverageXml
+     * @return
+     */
     Map<String, ClassCoverage> retrieveCoverageClasses(XmlSlurper parser, String coverageXml) {
         def coverage = parser.parseText(coverageXml)
         def coverageClasses = [:]
@@ -206,13 +205,12 @@ class CoverageService {
     }
 }
 
-
 // =======================================================================================================================================
 // Method definition
 // =======================================================================================================================================
-static boolean shouldFinish(CliBuilder cli, String option){
+static boolean shouldFinish(CliBuilder cli, String option) {
     println "Option: '${option}'"
-    if(option.isEmpty()) {
+    if (option.isEmpty()) {
         cli.usage()
         return true
     }
@@ -243,7 +241,7 @@ def updateCopadoCoverage(args) {
         return
     }
 
-    if(  !options.i || !options.s  ||  !options.u  ||  !options.p  ||  !options.f){
+    if (!options.i || !options.s || !options.u || !options.p || !options.f) {
         println "ERROR: Wrong parameters"
 
         cli.usage()
@@ -268,9 +266,8 @@ def updateCopadoCoverage(args) {
     salesforceService.getToken(options.i, options.s, options.u, options.p)
     def userStoryId = salesforceService.getUserStoryId(options.f)
     salesforceService.saveUserStory(userStoryId, minRate)
-    salesforceService.uploadAttachment(coverageXml, userStoryId)
+    salesforceService.uploadAttachment(userStoryId)
 }
-
 
 // =======================================================================================================================================
 // Main
