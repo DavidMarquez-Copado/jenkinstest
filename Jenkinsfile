@@ -18,7 +18,7 @@ pipeline {
         sh 'zip -r target/site/cobertura.zip target/site/cobertura'
 
         library('copadoCoverage@')
-        sh 'updateCopadoCoverage "-f" ${COPADO_COVERAGE_FEATURE_BRANCH} "-i" ${COPADO_COVERAGE_CLIENT_ID} "-s" ${COPADO_COVERAGE_CLIENT_SECRET} "-u" ${COPADO_COVERAGE_USER_NAME} "-p" ${COPADO_COVERAGE_PASSWORD}'
+        updateCopadoCoverage '"-f" ${COPADO_COVERAGE_FEATURE_BRANCH} "-i" ${COPADO_COVERAGE_CLIENT_ID} "-s" ${COPADO_COVERAGE_CLIENT_SECRET} "-u" ${COPADO_COVERAGE_USER_NAME} "-p" ${COPADO_COVERAGE_PASSWORD}'
       }
     }
 
