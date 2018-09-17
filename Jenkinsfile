@@ -20,10 +20,10 @@ pipeline {
         copadoCoverage 'updateCopadoCoverage(["-f",${COPADO_COVERAGE_FEATURE_BRANCH},"-i",${COPADO_COVERAGE_CLIENT_ID},"-s",${COPADO_COVERAGE_CLIENT_SECRET},"-u",${COPADO_COVERAGE_USER_NAME},"-p",${COPADO_COVERAGE_PASSWORD}])'
     }
   }
+  }
   post {
     always {
         step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
     }
   }
-}
 }
