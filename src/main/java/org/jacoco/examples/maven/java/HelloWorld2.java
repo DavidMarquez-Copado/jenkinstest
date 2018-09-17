@@ -5,6 +5,7 @@ public class HelloWorld2 {
 	// Added other comment
 	// Added other comment
 	// Added other comment
+	// Added other comment
 	public String getMessage(boolean bigger) {
 		if (bigger) {
 			return "Hello Universe!";
