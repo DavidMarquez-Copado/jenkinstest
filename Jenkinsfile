@@ -3,21 +3,21 @@ pipeline {
   stages {
     stage('list-env') {
       steps {
-        sh 'env'
+        bat 'set'
       }
     }
     stage('build') {
         steps {
-            sh '/usr/local/bin/mvn clean install'
+            bat 'mvn clean install'
         }
     }
     stage('coverage') {
       steps {
-        sh '/usr/local/bin/mvn -f pom.xml clean org.codehaus.mojo:cobertura-maven-plugin:2.7:cobertura -Dcobertura.report.format=xml'
-        sh '/usr/local/bin/mvn -f pom.xml org.codehaus.mojo:cobertura-maven-plugin:2.7:cobertura -Dcobertura.report.format=html'
-        sh 'zip -r target/site/cobertura.zip target/site/cobertura'
-        sh '/usr/local/bin/git clone https://github.com/DavidMarquez-Copado/copado-coverage.git'
-        sh 'java -jar copado-coverage/realses/copado-coverage.jar -clientId "${COPADO_COVERAGE_CLIENT_ID}" -clientSecret "${COPADO_COVERAGE_CLIENT_SECRET}" -username "${COPADO_COVERAGE_USER_NAME}" -password "${COPADO_COVERAGE_PASSWORD}" -featureBranch "${COPADO_COVERAGE_FEATURE_BRANCH}"' 
+        bat 'mvn -f pom.xml clean org.codehaus.mojo:cobertura-maven-plugin:2.7:cobertura -Dcobertura.report.format=xml'
+        bat 'mvn -f pom.xml org.codehaus.mojo:cobertura-maven-plugin:2.7:cobertura -Dcobertura.report.format=html'
+        bat '7z a -tzip target/site/cobertura.zip target/site/cobertura'
+        bat 'git clone https://github.com/CopadoSolutions/copado-coverage.git'
+        bat 'java -jar copado-coverage/realses/copado-coverage.jar -clientId "${COPADO_COVERAGE_CLIENT_ID}" -clientSecret "${COPADO_COVERAGE_CLIENT_SECRET}" -username "${COPADO_COVERAGE_USER_NAME}" -password "${COPADO_COVERAGE_PASSWORD}" -featureBranch "${COPADO_COVERAGE_FEATURE_BRANCH}"'
       }
     }
   }
