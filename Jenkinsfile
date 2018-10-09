@@ -3,21 +3,24 @@ pipeline {
   stages {
     stage('list-env') {
       steps {
-        bat 'set'
+        sh 'env'
       }
     }
     stage('build') {
         steps {
-            bat 'mvn clean install'
+            sh '/usr/local/bin/mvn clean install'
         }
     }
     stage('coverage') {
       steps {
-        bat 'mvn -f pom.xml clean org.codehaus.mojo:cobertura-maven-plugin:2.7:cobertura -Dcobertura.report.format=xml'
-        bat 'mvn -f pom.xml org.codehaus.mojo:cobertura-maven-plugin:2.7:cobertura -Dcobertura.report.format=html'
-        bat '7z a -tzip target/site/cobertura.zip target/site/cobertura'
-        bat 'git clone https://${GIT_USERNAME_PASSWORD}@github.com/CopadoSolutions/copado-coverage.git'
-        bat 'java -jar copado-coverage/realses/copado-coverage.jar -clientId %COPADO_COVERAGE_CLIENT_ID% -clientSecret %COPADO_COVERAGE_CLIENT_SECRET% -username %COPADO_COVERAGE_USER_NAME% -password %COPADO_COVERAGE_PASSWORD% -featureBranch %COPADO_COVERAGE_FEATURE_BRANCH%'
+        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'copado-jenkins-github-basicauth', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD']]) {
+          sh 'mvn -f pom.xml clean org.codehaus.mojo:cobertura-maven-plugin:2.7:cobertura -Dcobertura.report.format=xml'
+          sh 'mvn -f pom.xml org.codehaus.mojo:cobertura-maven-plugin:2.7:cobertura -Dcobertura.report.format=html'
+          sh 'zip -r target/site/cobertura.zip target/site/cobertura'
+          sh '/usr/local/bin/git clone https://$GIT_USERNAME:$GIT_PASSWORD@github.com/CopadoSolutions/copado-coverage.git'
+          sh 'java -jar copado-coverage/releases/copado-coverage.jar -username "${COPADO_COVERAGE_USER_NAME}" -password "${COPADO_COVERAGE_PASSWORD}" -featureBranch "feature/US-0003757"'
+          sh 'rm -rf copado-coverage'
+        }
       }
     }
   }
